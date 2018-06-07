@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.IO;
 using System.Globalization;
+using System.Collections;
 
 // c:\Windows\Microsoft.NET\Framework\v2.0.50727\csc
 // c:\Windows\Microsoft.NET\Framework\v4.0.30319\csc
@@ -76,6 +77,7 @@ public class Sbs {
 			Console.WriteLine(" -= Mini SQL =- ");
 			Console.WriteLine("1 - ExecuteReader");
 			Console.WriteLine("2 - ExecuteNonQuery");
+			Console.WriteLine("3 - ExecuteReader to .csv");
 			Console.WriteLine("0 - Exit");
 			Console.Write("Masukkan pilihan : ");
 			pil = Console.ReadLine();
@@ -151,6 +153,42 @@ public class Sbs {
 						command.ExecuteNonQuery();
 						conn.Close();
 						Console.WriteLine("Successfully executed");
+					}
+					catch (SqlException ex) {
+						Console.WriteLine("SqlException: {0}", ex.Message);
+						conn.Close();
+					}
+				}
+			}
+			else if (pil.Equals("3")) {
+				while (!inputSql.Equals("quit")) {
+					Console.Write(serverDb + "." + dbName + ">");
+					inputSql = Console.ReadLine();
+					if (inputSql.Equals("exit")) {
+						Environment.Exit(0);
+					}
+					
+					try {
+						ArrayList hasil = new ArrayList();
+						command = new SqlCommand(inputSql, conn);
+						conn.Open();
+						reader = command.ExecuteReader();
+						
+						tempString = "";
+						for(i=0; i<reader.FieldCount; i++) {
+							tempString += "\"" + reader.GetName(i) + "\",";
+						}
+						hasil.Add(tempString);
+						
+						while (reader.Read()) {
+							tempString = "";
+							for(i=0; i<reader.FieldCount; i++) {
+								tempString += "\"" + Convert.ToString(reader[i]) + "\",";
+							}
+							hasil.Add(tempString);
+						}
+						conn.Close();
+						System.IO.File.WriteAllLines(@"hasil.csv", (String[])hasil.ToArray(typeof( string )));
 					}
 					catch (SqlException ex) {
 						Console.WriteLine("SqlException: {0}", ex.Message);
