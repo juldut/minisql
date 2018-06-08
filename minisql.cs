@@ -32,6 +32,14 @@ public class Sbs {
 		Console.WriteLine();
 		return(hasil);
 	}
+	public static string cetakField(string paramString, int paramLen) {
+		string hasil = paramString;
+		if (paramString.Length > paramLen) {
+			hasil = paramString.Substring(0, paramLen);
+		}
+		return(hasil.PadRight(paramLen, ' '));
+	}
+	
 	public static void Main() {
 		String userDb, passDb, serverDb, dbName;
 		int i, fieldLength;
@@ -98,8 +106,7 @@ public class Sbs {
 						Console.Write("| ");
 						for(i=0; i<reader.FieldCount; i++) {
 							tempString = reader.GetName(i);
-							if (tempString.Length > fieldLength) tempString = tempString.Substring(0, fieldLength);
-							Console.Write(tempString.PadRight(fieldLength, ' ') + " | ");
+							Console.Write(cetakField(tempString, fieldLength) + " | ");
 						}
 						Console.WriteLine("");
 						for (i=0; i<Console.BufferWidth-1; i++) {
@@ -119,14 +126,11 @@ public class Sbs {
 										tempString = reader.GetInt32(i).ToString();
 									}
 									else {
-										tempString = (string)reader[i];
+										tempString = Convert.ToString(reader[i]);
 									}
 								}
-								if (tempString.Length > fieldLength) tempString = tempString.Substring(0, fieldLength);
-								Console.Write(tempString.PadRight(fieldLength, ' ') + " | ");
+								Console.Write(cetakField(tempString, fieldLength) + " | ");
 								
-								// Console.Write(reader[i] + " | ");
-								// Console.WriteLine(reader.GetDataTypeName(i));
 							}
 							Console.WriteLine("");
 						}
